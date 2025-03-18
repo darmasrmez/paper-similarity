@@ -21,3 +21,7 @@ $ uv venv
 ```bash
 $ uv pip install -r requirements.txt
 ```
+
+## Web Scrapping
+
+Go to [collect](./collect/) folder
