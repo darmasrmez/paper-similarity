@@ -4,7 +4,7 @@
 
 Team members:
 * Armas Ramírez Daniel
-* Karla Esther Gachúz Escamilla
+* Escamilla Gachuz Karla Esther 
 * Prezas Bernal Emiliano
 * Dorado Alcalá Nataly
 
