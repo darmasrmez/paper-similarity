@@ -1,44 +1,61 @@
 import asyncio
 import aiohttp
 import requests
+import re
+import csv
+import random
+import time
 from bs4 import BeautifulSoup
 
-pubmed_reference = {
-    
-}
+BASE_URL = 'https://pubmed.ncbi.nlm.nih.gov/'
 
-def parse_pubmed_format(content):
-    lines = content.split('\n')
-    for 
-    return [date, title, authors, abstract, doi]
-
-async def extract_info(page, session):
-    base_url = 'https://pubmed.ncbi.nlm.nih.gov'
-    async with session.get(f'{base_url}{page}?format=pubmed') as response:
+async def extract_info(pmid, session):
+    url = f"{BASE_URL}{pmid}/?format=pubmed"
+    async with session.get(url) as response:
         soup = BeautifulSoup(await response.text(), 'html.parser')
-        content = soup.find('pre', class_='article-details').text
 
+        def extract(pattern, text, join=False):
+            match = re.findall(pattern, text)
+            return ', '.join(match) if join and match else (match[0] if match else None)
 
+        data = {
+            'DOI': extract(r"(LID|AID)\s+-\s+(.+)\s+\[doi\]", soup.text),
+            'Title': extract(r"TI  -\s*(.+(?:\n\s{6,}.+)*)", soup.text),
+            'Authors': extract(r"FAU\s+-\s+(.+)\r", soup.text, join=True),
+            'Abstract': extract(r"AB  -\s*(.+(?:\n\s{6,}.+)*)", soup.text),
+            'Journal': extract(r"JT  -\s*(.+)\r", soup.text),
+            'Date': extract(r"DP  -\s*(\d{4} \w{3}(?: \d{1,2})?)", soup.text),
+        }
+        return data if all(data.values()) else None
 
-async def get_pubmed_papers(pubmed_list):
-    source = requests.get(pubmed_list).text
-    soup = BeautifulSoup(source, 'html.parser')
-    papers = soup.find_all('a', class_='docsum-title', href=True)
+async def get_pubmed_articles(num_articles):
+    articles = []
+    page = 1
     async with aiohttp.ClientSession() as session:
-        tasks = [
-            extract_info(paper['href'], session)
-            for paper in papers
-        ]
-        list_of_details = await asyncio.gather(*tasks)
-        print(list_of_details)
-        print(len(list_of_details))
+        while len(articles) < num_articles:
+            url = f"{BASE_URL}trending/?filter=simsearch1.fha&page={page}"
+            soup = BeautifulSoup(requests.get(url).text, 'html.parser')
+            pmids = [tag['href'].split('/')[-2] for tag in soup.find_all('a', class_='docsum-title')]
+            
+            tasks = [extract_info(pmid, session) for pmid in pmids]
+            results = await asyncio.gather(*tasks)
+            articles.extend(filter(None, results))
+            
+            page += 1
+            time.sleep(random.uniform(1, 2))
+            
+    return articles[:num_articles]
+
+async def save_articles(articles, filename):
+    with open(filename, 'w', encoding='utf-8', newline='') as file:
+        writer = csv.DictWriter(file, fieldnames=articles[0].keys())
+        writer.writeheader()
+        writer.writerows(articles)
+    print(f'Los artículos se han guardado en {filename}')
 
 if __name__ == '__main__':
-    links = ['https://pubmed.ncbi.nlm.nih.gov/trending/']
+    num_articles = 300
+    articles = asyncio.run(get_pubmed_articles(num_articles))
+    if articles:
+        asyncio.run(save_articles(articles, '../data/pubmed_raw_corpus.csv'))
 
-    generate_links = lambda x: f'https://pubmed.ncbi.nlm.nih.gov/trending/?page={x}'
-    for i in range(2, 11):
-        links.append(generate_links(i))
-
-    for link in links:
-        get_pubmed_papers(link)
