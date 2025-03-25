@@ -26,25 +26,31 @@ async def extract_info(pmid, session):
             'Journal': extract(r"JT  -\s*(.+)\r", soup.text),
             'Date': extract(r"DP  -\s*(\d{4} \w{3}(?: \d{1,2})?)", soup.text),
         }
+
+        data = {}
+        for key, pattern in patterns.items():
+            matches = re.findall(pattern, soup.text)
+            data[key] = ', '.join(matches) if key == 'Authors' and matches else (matches[0] if matches else None)
+
         return data if all(data.values()) else None
 
 async def get_pubmed_articles(num_articles):
-    articles = []
+    articles = set()
     page = 1
     async with aiohttp.ClientSession() as session:
         while len(articles) < num_articles:
             url = f"{BASE_URL}trending/?filter=simsearch1.fha&page={page}"
             soup = BeautifulSoup(requests.get(url).text, 'html.parser')
-            pmids = [tag['href'].split('/')[-2] for tag in soup.find_all('a', class_='docsum-title')]
-            
+            pmids = {tag['href'].split('/')[-2] for tag in soup.find_all('a', class_='docsum-title')}
+
             tasks = [extract_info(pmid, session) for pmid in pmids]
             results = await asyncio.gather(*tasks)
-            articles.extend(filter(None, results))
-            
+            articles.update(filter(None, results))
+
             page += 1
             time.sleep(random.uniform(1, 2))
-            
-    return articles[:num_articles]
+
+    return list(articles)[:num_articles]
 
 async def save_articles(articles, filename):
     with open(filename, 'w', encoding='utf-8', newline='') as file:
@@ -58,4 +64,3 @@ if __name__ == '__main__':
     articles = asyncio.run(get_pubmed_articles(num_articles))
     if articles:
         asyncio.run(save_articles(articles, '../data/pubmed_raw_corpus.csv'))
-

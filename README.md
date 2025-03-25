@@ -4,7 +4,7 @@
 
 Team members:
 * Armas Ramírez Daniel
-* Karla Esther Gachúz Escamilla
+* Escamilla Gachuz Karla Esther 
 * Prezas Bernal Emiliano
 * Dorado Alcalá Nataly
 
@@ -21,7 +21,10 @@ $ uv venv
 ```bash
 $ uv pip install -r requirements.txt
 ```
+<<<<<<< HEAD
 
 ## Web Scrapping
 
 Go to [collect](./collect/) folder
+=======
+>>>>>>> 5dcebca1a2dc92b949f9b4fcd91a54067c404548
