@@ -18,7 +18,7 @@ async def extract_info(pmid, session):
             match = re.findall(pattern, text)
             return ', '.join(match) if join and match else (match[0] if match else None)
 
-        data = {
+        patterns = {
             'DOI': extract(r"(LID|AID)\s+-\s+(.+)\s+\[doi\]", soup.text),
             'Title': extract(r"TI  -\s*(.+(?:\n\s{6,}.+)*)", soup.text),
             'Authors': extract(r"FAU\s+-\s+(.+)\r", soup.text, join=True),
