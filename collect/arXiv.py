@@ -16,7 +16,7 @@ async def extract_info(page, session, section):
 
         # cleaning data
         date = date.replace('Submitted on ', '').replace('[', '').replace(']', '').replace('\n', '').strip()
-        title = title.replace('Tilte:', '').strip()
+        title = title.replace('Title:', '').strip()
         abstract = abstract.replace('Abstract:', '').strip()
         authors = authors.replace('Authors:', '').strip()
         abstract = abstract.replace('\n', '').strip()
