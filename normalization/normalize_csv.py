@@ -34,34 +34,33 @@ def normalize_text(text):
     text = text.lower()
     tokens = word_tokenize(text)
     tagged_tokens = pos_tag(tokens)
-    
+
     filtered_tokens = []
     for token, tag in tagged_tokens:
-        if token in string.punctuation: 
+        if token in string.punctuation:
             filtered_tokens.append(token)
         elif (token.replace('-', '').isalpha() and tag not in POS_TO_REMOVE):
-            #and token not in stopwords.words('english')):
             if '-' in token:
                 parts = token.split('-')
                 lemmatized_parts = [
-                    lemmatizer.lemmatize(part, get_wordnet_pos(tag)) 
+                    lemmatizer.lemmatize(part, get_wordnet_pos(tag))
                     for part in parts
                 ]
-                filtered_token = ' '.join(lemmatized_parts)  # Unir con espacio
+                filtered_token = ' '.join(lemmatized_parts)
             else:
                 filtered_token = lemmatizer.lemmatize(token, get_wordnet_pos(tag))
             filtered_tokens.append(filtered_token)
-    
+
     return ' '.join(filtered_tokens)
 
-df_arxiv = pd.read_csv('arxiv_clean_corpus.csv')
+df_arxiv = pd.read_csv('../data/arxiv_clean_corpus.csv')
 df_arxiv['Title'] = df_arxiv['Title'].apply(normalize_text)
 df_arxiv['Abstract'] = df_arxiv['Abstract'].apply(normalize_text)
-df_arxiv.to_csv('arxiv_normalized_corpus.csv', index=False)
+df_arxiv.to_csv('./arxiv_normalized_corpus.csv', index=False)
 
-df_pubmed = pd.read_csv('pubmed_clean_corpus.csv')
+df_pubmed = pd.read_csv('../data/pubmed_clean_corpus.csv')
 df_pubmed['Title'] = df_pubmed['Title'].apply(normalize_text)
 df_pubmed['Abstract'] = df_pubmed['Abstract'].apply(normalize_text)
-df_pubmed.to_csv('pubmed_normalized_corpus.csv', index=False)
+df_pubmed.to_csv('./pubmed_normalized_corpus.csv', index=False)
 
 print("¡Normalización completada y archivos guardados!")
