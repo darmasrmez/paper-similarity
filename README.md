@@ -25,3 +25,19 @@ $ uv pip install -r requirements.txt
 ### Web Scrapping
 
 Go to [collect](./collect/) folder
+
+### Normalization
+
+Go to [normalization](./normalization/) folder
+
+### Vectorization
+
+Go to [vectorization](./vectorization/) folder
+
+### Web app using streamlit
+
+Run the web app:
+
+```bash
+streamlit run app/main.py
+```

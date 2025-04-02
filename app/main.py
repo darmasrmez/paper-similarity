@@ -45,9 +45,10 @@ with st.form(key='search_form'):
                                'tf-idf-unigram', 'tf-idf-bigram'])
     submitted = st.form_submit_button("Find Top 10")
 
-
+# Procesamiento
 if submitted and query_file:
     try:
+        # Parsear consulta
         actual_file_type = 'bib' if file_type == 'BibTeX' else 'ris'
         query_data = parse_query_file(query_file, actual_file_type)
         if not query_data:
@@ -119,13 +120,14 @@ if submitted and query_file:
 
         st.subheader("Top 10 Most Similar Papers:")
         st.dataframe(
-            top_results[['Similarity', 'Corpus', 'Paper']],
+            top_results[['Similarity', 'index', 'Corpus', 'Paper']],
             hide_index=True,
             column_config={
                 "Similarity": st.column_config.NumberColumn(format="%.4f"),
                 "Document": st.column_config.Column(width="large")
             }
         )
+
     except Exception as e:
         st.error(f"Processing error: {str(e)}")
 elif submitted:
