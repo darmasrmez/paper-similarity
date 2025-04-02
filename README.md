@@ -4,7 +4,7 @@
 
 Team members:
 * Armas Ramírez Daniel
-* Escamilla Gachuz Karla Esther 
+* Escamilla Gachuz Karla Esther
 * Prezas Bernal Emiliano
 * Dorado Alcalá Nataly
 
@@ -21,10 +21,23 @@ $ uv venv
 ```bash
 $ uv pip install -r requirements.txt
 ```
-<<<<<<< HEAD
 
-## Web Scrapping
+### Web Scrapping
 
 Go to [collect](./collect/) folder
-=======
->>>>>>> 5dcebca1a2dc92b949f9b4fcd91a54067c404548
+
+### Normalization
+
+Go to [normalization](./normalization/) folder
+
+### Vectorization
+
+Go to [vectorization](./vectorization/) folder
+
+### Web app using streamlit
+
+Run the web app:
+
+```bash
+streamlit run app/main.py
+```
