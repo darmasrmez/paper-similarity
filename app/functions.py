@@ -69,6 +69,18 @@ def vectorize_corpus(corpus, method, ngram):
         raise ValueError("Método no válido")
     return vectorizer.fit_transform(corpus), vectorizer
 
+def vectorize_corpus(corpus, method, ngram):
+    token_pattern = r'(?u)\w+|[^\w\s]'
+    if method == "count":
+        vectorizer = CountVectorizer(token_pattern=token_pattern, ngram_range=ngram)
+    elif method == "binary":
+        vectorizer = CountVectorizer(binary=True, token_pattern=token_pattern, ngram_range=ngram)
+    elif method == "tf-idf":
+        vectorizer = TfidfVectorizer(token_pattern=token_pattern, ngram_range=ngram)
+    else:
+        raise ValueError("Método no válido")
+    return vectorizer.fit_transform(corpus), vectorizer
+
 def load_vectorized_corpus(corpus_path):
     with open(corpus_path, 'rb') as f:
         document_vectors = pickle.load(f)
